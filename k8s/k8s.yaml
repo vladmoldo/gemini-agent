@@ -17,6 +17,8 @@ spec:
         image: gcr.io/gcp-vlad/gemini-agent:latest
         ports:
         - containerPort: 8080
+      imagePullSecrets:
+      - name: gcr-json-key
 ---
 apiVersion: v1
 kind: Service
