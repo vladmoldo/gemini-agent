@@ -1,0 +1,21 @@
+steps:
+# Build the container image
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'gcr.io/gcp-vlad/gemini-agent:$COMMIT_SHA', '.']
+
+# Push the container image to Container Registry
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/gcp-vlad/gemini-agent:$COMMIT_SHA']
+
+# Deploy container image to GKE
+- name: 'gcr.io/cloud-builders/gke-deploy'
+  args:
+  - run
+  - --filename=k8s/
+  - --image=gcr.io/gcp-vlad/gemini-agent:$COMMIT_SHA
+  - --location=us-central1
+  - --cluster=gitlab-terraform-gke-argocd
+  - --project=gcp-vlad
+
+images:
+- 'gcr.io/gcp-vlad/gemini-agent:$COMMIT_SHA'
