@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gemini-agent
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: gemini-agent
+  template:
+    metadata:
+      labels:
+        app: gemini-agent
+    spec:
+      containers:
+      - name: gemini-agent
+        image: gcr.io/PROJECT_ID/gemini-agent:latest
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gemini-agent-service
+spec:
+  selector:
+    app: gemini-agent
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: LoadBalancer
