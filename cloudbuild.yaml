@@ -19,3 +19,7 @@ steps:
 
 images:
 - 'gcr.io/gcp-vlad/gemini-agent:$COMMIT_SHA'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
