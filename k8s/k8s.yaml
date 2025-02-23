@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: gemini-agent
-        image: gcr.io/PROJECT_ID/gemini-agent:latest
+        image: gcr.io/gcp-vlad/gemini-agent:latest
         ports:
         - containerPort: 8080
 ---
