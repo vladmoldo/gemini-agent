@@ -1,5 +1,7 @@
 import os
-from fastapi import FastAPI
+from fastapi import FastAPI, WebSocket
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory
@@ -15,15 +17,24 @@ conversation = ConversationChain(
     memory=ConversationBufferMemory()
 )
 
-@app.post("/chat")
-async def chat(message: str):
-    response = conversation.predict(input=message)
-    return {"response": response}
+# Serve static files
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    while True:
+        data = await websocket.receive_text()
+        response = conversation.predict(input=data)
+        await websocket.send_text(response)
 
 @app.get("/")
-async def root():
-    return {"message": "Gemini Chat Agent is running"}
+async def get():
+    with open("static/index.html", "r") as f:
+        html_content = f.read()
+    return HTMLResponse(content=html_content)
 
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8080)
+

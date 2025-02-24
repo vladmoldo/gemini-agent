@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini Chat</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        #chat-container { height: 400px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; }
+        #user-input { width: 80%; padding: 5px; }
+        #send-button { padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Gemini Chat</h1>
+    <div id="chat-container"></div>
+    <input type="text" id="user-input" placeholder="Type your message...">
+    <button id="send-button">Send</button>
+
+    <script>
+        const chatContainer = document.getElementById('chat-container');
+        const userInput = document.getElementById('user-input');
+        const sendButton = document.getElementById('send-button');
+        const socket = new WebSocket('ws://' + window.location.host + '/ws');
+
+        socket.onmessage = function(event) {
+            appendMessage('Gemini: ' + event.data);
+        };
+
+        sendButton.onclick = function() {
+            if (userInput.value) {
+                socket.send(userInput.value);
+                appendMessage('You: ' + userInput.value);
+                userInput.value = '';
+            }
+        };
+
+        userInput.onkeypress = function(event) {
+            if (event.keyCode === 13) {
+                sendButton.click();
+            }
+        };
+
+        function appendMessage(message) {
+            const messageElement = document.createElement('p');
+            messageElement.textContent = message;
+            chatContainer.appendChild(messageElement);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+    </script>
+</body>
+</html>
+
